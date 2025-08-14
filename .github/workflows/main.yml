@@ -23,6 +23,21 @@ jobs:
   deploy:
     needs: build-docker-image
     name: deploy
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, label-kosa]
     steps:
-      - run: echo '이미지 배포 및 실행'
+      - name: 기존 서비스를 제거한다
+        run: docker service rm my-fastapi-whoami-app
+
+      - name: docker hub에 로그인을 한다
+        run: docker login -u hazelleey -p $DOCKERHUB_PW
+                
+      - name: 생성된 이미지를 docker hub에 pull로 내려받는다
+        run: docker pull hazelleey/my-fastapi-whoami:latest
+                
+      - name: 도커 서비스 실행
+        run: |
+          docker service create \
+              --name my-fastapi-whoami-app \
+              --publish published=8000,target=8000 \
+              --replicas 3 \
+              hazelleey/my-fastapi-whoami:latest
