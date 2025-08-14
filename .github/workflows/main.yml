@@ -12,7 +12,7 @@ jobs:
         run: |
           'echo '이미지 빌드 1단계'
           'echo '이미지 빌드 2단계'
-deploy:
+  deploy:
     needs: build-docker-image
     name: deploy
     runs-on: ubuntu-latest
